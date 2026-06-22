@@ -140,6 +140,11 @@ body {
   color: #d7686b;
 }
 
+.gh-link {
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
 /* ── CONTAINER ── */
 .container {
   flex: 1;
