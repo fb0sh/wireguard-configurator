@@ -116,6 +116,30 @@ body {
   background: #1a242f;
 }
 
+.lang-link {
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 6px 8px;
+  border-radius: var(--wg-radius);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.lang-link.active-lang {
+  color: #fff;
+}
+
+.lang-link.inactive-lang {
+  color: #95a5a6;
+}
+
+.lang-link:hover {
+  color: #d7686b;
+}
+
 /* ── CONTAINER ── */
 .container {
   flex: 1;

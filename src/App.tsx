@@ -4,6 +4,7 @@ import {
   generateKeyPair,
   generatePresharedKey,
 } from './wireguard';
+import { useI18n } from './i18n';
 import './App.css';
 
 function parseCidr(vpnCidr: string): { network: string; prefix: number } {
@@ -24,6 +25,7 @@ function incrementIp(ip: string, n: number): string {
 }
 
 function App() {
+  const { t, locale, setLocale } = useI18n();
   const [serverHost, setServerHost] = useState('server-dns-or-ip');
   const [listenPort, setListenPort] = useState(51820);
   const [vpnCidr, setVpnCidr] = useState('10.10.1.0/24');
@@ -60,7 +62,6 @@ function App() {
     return incrementIp(network, 1) + '/32';
   }, [vpnCidr]);
 
-  // Regenerate everything (keys + structure) whenever settings change
   const allClientData = useMemo(() => {
     const { network } = parseCidr(vpnCidr);
     return Array.from({ length: clientCount }, (_, i) => {
@@ -131,7 +132,6 @@ function App() {
     [allClientData, serverPublicKey, serverHost, listenPort]
   );
 
-  // Generate QR codes
   useEffect(() => {
     if (!showQR) return;
     const generateQRs = async () => {
@@ -180,15 +180,24 @@ function App() {
               <path fill="currentColor" d="M0,1061.47c13.15-88.71,117.03-170.41,204.88-161.09-27.21,36.8-39.78,78.42-42.81,119.94-29.19,5.38-56.7,8.99-83.41,15.77C52.36,1042.77,26.88,1052.65,0,1061.47Z"/>
               <path fill="currentColor" d="M651.83,834.47c-7.4-6.4-12.09-6.4-20.78-.84q-44.18,28.27-90.24,53.56c-17.56,9.66-36.58,16.68-58.61,26.52,7.56,1.95,11.2,2.87,14.83,3.83,82.34,21.91,126.33,94.2,106.84,175.16-17.33,72-90.42,118.03-161.25,105.89-59.05-10.12-110.6-59.16-119.21-117.92-9.38-64.03,22.51-125.62,79.25-151.42,31.47-14.31,63.79-26.77,95.19-41.23,35.7-16.44,74.29-29.43,105.46-52.32,77.35-56.8,125.12-135.01,143.75-229.4,11.16-56.54,10.4-112.84-15.47-166.52-19.85-41.2-52.43-71.13-87.43-98.45-36.02-28.11-74.15-53.52-110-81.82-9.7-7.66-16.25-20.87-20.74-32.84-1.9-5.08,4.29-18.84,8.43-19.58,20.98-4.47,43.22-6.23,66.82-6.82,25.82-.97,51.71-.15,77.57.19,5.61.07,13.22-.65,16.44,2.51,13.39,13.17,23.9,4.7,33.19-3.97,7.82-7.29,13.4-16.99,19.62-25.17-3.78-.56-11.52-2.51-19.3-2.69-26-.62-52.04-.22-78.02-1.18-4.63-.17-9.09-4.94-13.63-7.58,4.78-1.9,9.54-5.4,14.33-5.44,44.85-.42,89.7-.25,134.59-.25,.05-23.34-31.14-55.29-58.85-63.95-.21,3.16-.4,6.1-.61,9.23-27.53.65-54.56.14-79.11-12.91-6.47-3.44-10.7-11.09-15.96-16.8-6.63-7.19-12.07-16.43-20.15-21.12-16.57-9.61-34.65-16.58-51.93-25C485.43-3.78,420.57-2.73,350.9,3.65c41.64,9.69,79.25,18.45,116.87,27.2q-.64,3.43-1.28,6.86C416.18,44.46,368.59,26.01,319.38,19.17c18.14,9.72,36.7,19.34,54.56,28.53,19,8.51,38.52,15.71,58.08,23.58C407.18,92.51,382.25,97.16,351.01,90.03c-17.07-3.9-35.13-5.97-52.56-5.12-18.01.88-36.14,5.31-52.49,16.24,17.51,8.88,33.64,16.24,48.86,25.17,6.28,3.68,13.47,9.93,15.22,16.38,4.19,15.44,5.4,31.69,7.82,47.62-28.67,3.25-79.07,32.4-89.26,51.37,44.06,8.48,92.03-1.78,134.06,26.62-13.84,10.48-46.09,23.51-57.91,32.46,14.62,3.83,48.5,1.95,61.75,1.06,11.16-.76,16.31-1.03,20.88,2.73l80.42,66.34c13.64,10.99,68.72,63.13,83.1,95.9,12.24,27.9,13.74,51.64,13.74,57.43,0,22.12-4.08,45.02-12.6,67.02-4.49,11.4-17.66,36.65-44.83,66.08-42.11,45.62-96.27,70.27-155.5,82.49-137.72,28.4-252.15,175.47-219.85,337.61,37.71,189.3,246.65,291.78,417.39,201.74,110.36-58.2,168.87-171.75,153.19-295.36C742.24,944.34,708.46,883.43,651.83,834.47ZM580.28,103.54c4.92-3.76,9.98-6.92,16.08-1.89,3.47,2.86,6.85,5.82,11.05,9.41-5.22,2.76-9.46,5.08-13.78,7.26-6.05,3.05-10.57,1.01-14.23-3.81C576.43,110.6,575.9,106.89,580.28,103.54Z"/>
             </svg>
-            WireGuard Configurator
+            {t.nav.title}
           </a>
+          <div className="navbar-links">
+            <a className="active">{t.nav.config}</a>
+            <a onClick={() => {
+              const el = document.getElementById('guide-section');
+              if (el) el.scrollIntoView({ behavior: 'smooth' });
+            }}>{t.nav.guide}</a>
+            <a className={`lang-link ${locale === 'zh' ? 'active-lang' : 'inactive-lang'}`} href="#zh-CN" onClick={e => { e.preventDefault(); setLocale('zh'); }}>中文</a>
+            <a className={`lang-link ${locale === 'en' ? 'active-lang' : 'inactive-lang'}`} href="#en-US" onClick={e => { e.preventDefault(); setLocale('en'); }}>EN</a>
+          </div>
         </div>
       </nav>
 
       <div className="container">
         <div className="page-header" style={{ textAlign: 'center', border: 'none', paddingBottom: 0 }}>
-          <h1 style={{ fontSize: 36 }}>WireGuard Configurator</h1>
-          <p style={{ fontSize: 16 }}>Generate server and client configurations &mdash; Set up your own VPN</p>
+          <h1 style={{ fontSize: 36 }}>{t.hero.title}</h1>
+          <p style={{ fontSize: 16 }}>{t.hero.subtitle}</p>
         </div>
 
         {/* ── FORM ── */}
@@ -196,21 +205,21 @@ function App() {
           <div className="panel-body">
             <div className="form-grid">
               <div className="form-group">
-                <label>Server Host</label>
+                <label>{t.server.host}</label>
                 <input type="text" value={serverHost} onChange={e => setServerHost(e.target.value)} className="input" />
               </div>
               <div className="form-group">
-                <label>Server Listen Port</label>
+                <label>{t.server.listenPort}</label>
                 <input type="number" value={listenPort} onChange={e => setListenPort(Number(e.target.value))} min={1} max={65535} className="input" />
               </div>
 
               <div className="form-group full-width">
-                <label>Number of Clients: {clientCount}</label>
+                <label>{t.server.numClients}: {clientCount}</label>
                 <input type="range" min={1} max={20} value={clientCount} onChange={e => setClientCount(Number(e.target.value))} style={{ width: '100%', accentColor: '#ae373a' }} />
               </div>
 
               <div className="form-group">
-                <label>VPN CIDR</label>
+                <label>{t.server.vpnCidr}</label>
                 <select value={vpnCidr} onChange={e => setVpnCidr(e.target.value)} className="input">
                   <option value="10.10.1.0/24">10.10.1.0/24</option>
                   <option value="10.20.2.0/24">10.20.2.0/24</option>
@@ -222,28 +231,28 @@ function App() {
               </div>
 
               <div className="form-group">
-                <label>Client Allowed IPs</label>
+                <label>{t.server.allowedIPs}</label>
                 <input type="text" value={clientAllowedIPs} onChange={e => setClientAllowedIPs(e.target.value)} className="input" />
               </div>
 
               <div className="form-group">
-                <label>Client DNS <span style={{ fontWeight: 400, textTransform: 'none', color: '#95a5a6' }}>optional</span></label>
+                <label>{t.server.dns} <span style={{ fontWeight: 400, textTransform: 'none', color: '#95a5a6' }}>{t.server.dnsOptional}</span></label>
                 <input type="text" value={clientDns} onChange={e => setClientDns(e.target.value)} className="input" />
               </div>
 
               <div className="form-group">
-                <label>Client Persistent Keepalive secs</label>
+                <label>{t.server.keepalive}</label>
                 <input type="number" value={keepalive} onChange={e => setKeepalive(Number(e.target.value))} min={0} max={3600} className="input" />
               </div>
             </div>
 
             <div className="form-grid" style={{ marginTop: 12 }}>
               <div className="form-group full-width">
-                <label>PostUp</label>
+                <label>{t.server.postUp}</label>
                 <textarea value={postUpText} onChange={e => setPostUpText(e.target.value)} rows={3} className="input" style={{ fontFamily: 'Source Code Pro, monospace', fontSize: 13 }} />
               </div>
               <div className="form-group full-width">
-                <label>PreDown</label>
+                <label>{t.server.preDown}</label>
                 <textarea value={preDownText} onChange={e => setPreDownText(e.target.value)} rows={3} className="input" style={{ fontFamily: 'Source Code Pro, monospace', fontSize: 13 }} />
               </div>
             </div>
@@ -252,15 +261,15 @@ function App() {
               <div style={{ display: 'flex', gap: 24, alignItems: 'center', flexWrap: 'wrap' }}>
                 <label className="checkbox-label" style={{ margin: 0 }}>
                   <input type="checkbox" checked={usePresharedKey} onChange={e => setUsePresharedKey(e.target.checked)} />
-                  Preshared Key
+                  {t.server.presharedKey}
                 </label>
                 <label className="checkbox-label" style={{ margin: 0 }}>
                   <input type="checkbox" checked={showQR} onChange={e => setShowQR(e.target.checked)} />
-                  Show QR Code
+                  {t.server.showQR}
                 </label>
-                <button className="btn btn-sm" onClick={generateKeys} title="Regenerate server keys">
+                <button className="btn btn-sm" onClick={generateKeys} title={t.server.regenerateKeys}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
-                  Regenerate Keys
+                  {t.server.regenerateKeys}
                 </button>
               </div>
             </div>
@@ -272,18 +281,18 @@ function App() {
           <div className="panel-heading" style={{ background: '#ae373a', borderColor: '#ae373a' }}>
             <h3 className="panel-title" style={{ color: '#fff' }}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><circle cx="6" cy="6" r="1" fill="currentColor"/><circle cx="6" cy="18" r="1" fill="currentColor"/></svg>
-              Server
+              {t.output.server}
             </h3>
           </div>
           <div className="panel-body">
             <div className="btn-group" style={{ marginBottom: 10 }}>
               <button className="btn btn-sm" onClick={() => copyToClipboard(serverConfig)}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                Copy
+                {t.output.copy}
               </button>
               <button className="btn btn-sm" onClick={() => downloadConfig(serverConfig, 'server.conf')}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                Download
+                {t.output.download}
               </button>
             </div>
             <pre className="config-block"><code>{serverConfig}</code></pre>
@@ -295,7 +304,7 @@ function App() {
           <div className="panel-heading">
             <h3 className="panel-title">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-              Clients
+              {t.output.clients}
             </h3>
           </div>
           <div className="panel-body">
@@ -307,11 +316,11 @@ function App() {
                   <div className="btn-group">
                     <button className="btn btn-sm" onClick={() => copyToClipboard(clientConfigs[idx], idx)}>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                      {copiedIndex === idx ? 'Copied!' : 'Copy'}
+                      {copiedIndex === idx ? t.output.copied : t.output.copy}
                     </button>
                     <button className="btn btn-sm" onClick={() => downloadConfig(clientConfigs[idx], `client-${c.index}.conf`)}>
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                      Download
+                      {t.output.download}
                     </button>
                   </div>
                 </div>
@@ -320,7 +329,7 @@ function App() {
                   {c.showQR && qrDataUrls[idx] && (
                     <div className="qr-sidebar">
                       <img src={qrDataUrls[idx]} alt={`QR for client ${c.index}`} className="qr-code" />
-                      <p className="qr-hint">Scan with the WireGuard mobile app</p>
+                      <p className="qr-hint">{t.output.scanHint}</p>
                     </div>
                   )}
                 </div>
@@ -330,45 +339,44 @@ function App() {
         </div>
 
         {/* ── SETUP GUIDE ── */}
-        <div className="panel">
+        <div id="guide-section" className="panel">
           <div className="panel-heading">
             <h3 className="panel-title">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-              Setup Guide
+              {t.guide.title}
             </h3>
           </div>
           <div className="panel-body">
             <details className="tutorial-details" open>
-              <summary>How to set up the WireGuard server</summary>
+              <summary>{t.guide.server}</summary>
               <div style={{ padding: 16 }}>
                 <ol className="tutorial-steps">
                   <li>
-                    <strong>Install WireGuard on your server</strong>
+                    <strong>{t.guide.install}</strong>
                     <div className="code-block-wrapper">
-                      <pre className="tutorial-code"><code>sudo apt update
-sudo apt install wireguard iptables -y</code></pre>
+                      <pre className="tutorial-code"><code>{t.guide.installCmd}</code></pre>
                     </div>
                   </li>
                   <li>
-                    <strong>Enable IP forwarding</strong>
+                    <strong>{t.guide.forwarding}</strong>
                     <div className="code-block-wrapper">
-                      <pre className="tutorial-code"><code>sudo sysctl -w net.ipv4.ip_forward=1</code></pre>
+                      <pre className="tutorial-code"><code>{t.guide.forwardingCmd}</code></pre>
                     </div>
                   </li>
                   <li>
-                    <strong>Save the server config</strong>
-                    <p>Copy the server configuration above and save it as <code>/etc/wireguard/server.conf</code></p>
+                    <strong>{t.guide.saveConfig}</strong>
+                    <p>{t.guide.saveConfigDesc}</p>
                   </li>
                   <li>
-                    <strong>Start WireGuard</strong>
+                    <strong>{t.guide.start}</strong>
                     <div className="code-block-wrapper">
-                      <pre className="tutorial-code"><code>sudo wg-quick up server</code></pre>
+                      <pre className="tutorial-code"><code>{t.guide.startCmd}</code></pre>
                     </div>
                   </li>
                   <li>
-                    <strong>Verify</strong>
+                    <strong>{t.guide.verify}</strong>
                     <div className="code-block-wrapper">
-                      <pre className="tutorial-code"><code>sudo wg show</code></pre>
+                      <pre className="tutorial-code"><code>{t.guide.verifyCmd}</code></pre>
                     </div>
                   </li>
                 </ol>
@@ -376,26 +384,26 @@ sudo apt install wireguard iptables -y</code></pre>
             </details>
 
             <details className="tutorial-details">
-              <summary>Client Setup</summary>
+              <summary>{t.guide.client}</summary>
               <div style={{ padding: 16 }}>
-                <p>Import the downloaded <code>.conf</code> file into the WireGuard app on your device, or scan the QR code with the mobile app.</p>
+                <p>{t.guide.clientDesc}</p>
                 <ul style={{ paddingLeft: 20 }}>
-                  <li><strong>Windows / macOS:</strong> Download from <a href="https://www.wireguard.com/install/" target="_blank" rel="noopener">wireguard.com/install</a></li>
-                  <li><strong>Android:</strong> <a href="https://play.google.com/store/apps/details?id=com.wireguard.android" target="_blank" rel="noopener">Google Play</a></li>
-                  <li><strong>iOS:</strong> <a href="https://apps.apple.com/app/wireguard/id1441195209" target="_blank" rel="noopener">App Store</a></li>
-                  <li><strong>Linux:</strong> <code>sudo apt install wireguard</code></li>
+                  <li><strong>{t.guide.windowsMac}:</strong> <a href="https://www.wireguard.com/install/" target="_blank" rel="noopener">wireguard.com/install</a></li>
+                  <li><strong>{t.guide.android}:</strong> <a href="https://play.google.com/store/apps/details?id=com.wireguard.android" target="_blank" rel="noopener">Google Play</a></li>
+                  <li><strong>{t.guide.ios}:</strong> <a href="https://apps.apple.com/app/wireguard/id1441195209" target="_blank" rel="noopener">App Store</a></li>
+                  <li><strong>{t.guide.linux}:</strong> <code>sudo apt install wireguard</code></li>
                 </ul>
               </div>
             </details>
 
             <details className="tutorial-details">
-              <summary>Notes</summary>
+              <summary>{t.guide.notes}</summary>
               <div style={{ padding: 16 }}>
                 <ul style={{ paddingLeft: 20 }}>
-                  <li>Any edit immediately updates all configurations and QR codes.</li>
-                  <li>Each line in PostUp (or PreDown) creates a separate PostUp (or PreDown) in the generated server config.</li>
-                  <li><code>eth0</code> may not always be the interface name on your host; change it in PostUp/PreDown if needed.</li>
-                  <li>To regenerate keys, click the <strong>Regenerate Keys</strong> button.</li>
+                  <li>{t.guide.note1}</li>
+                  <li>{t.guide.note2}</li>
+                  <li>{t.guide.note3}</li>
+                  <li>{t.guide.note4}</li>
                 </ul>
               </div>
             </details>
@@ -404,7 +412,7 @@ sudo apt install wireguard iptables -y</code></pre>
       </div>
 
       <footer className="footer">
-        <p>WireGuard Configurator &mdash; Generated entirely in your browser. No data is sent to any server.</p>
+        <p>{t.footer}</p>
       </footer>
     </div>
   );
