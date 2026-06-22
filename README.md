@@ -13,6 +13,13 @@ All cryptographic operations are performed client-side using [tweetnacl](https:/
 - **Setup guide** — built-in tutorial for server and client deployment
 - **Brand theme** — styled to match the official WireGuard website design
 
+## Screenshots
+
+<img width="1331" height="797" alt="image" src="https://github.com/user-attachments/assets/f23a108e-1a01-4361-be60-6cd29456557c" />
+
+<img width="1321" height="792" alt="image" src="https://github.com/user-attachments/assets/e82eddb6-e45b-419b-9213-fe15e5341c3c" />
+
+
 ## Usage
 
 ```bash
